@@ -79,9 +79,9 @@ def register_claude_hooks(project: Path) -> None:
     settings_path = project / ".claude" / "settings.json"
     settings = json.loads(settings_path.read_text(encoding="utf-8")) if settings_path.exists() else {}
     hooks = settings.setdefault("hooks", {})
-    lint = f'python3 "$CLAUDE_PROJECT_DIR/{VENDOR_DIR}/hooks/scripts/apex_lint.py" --hook'
-    guard = f'python3 "$CLAUDE_PROJECT_DIR/{VENDOR_DIR}/hooks/scripts/deploy_guard.py"'
-    context = f'python3 "$CLAUDE_PROJECT_DIR/{VENDOR_DIR}/hooks/scripts/session_context.py"'
+    lint = f'"$(command -v python3 || command -v python)" "$CLAUDE_PROJECT_DIR/{VENDOR_DIR}/hooks/scripts/apex_lint.py" --hook'
+    guard = f'"$(command -v python3 || command -v python)" "$CLAUDE_PROJECT_DIR/{VENDOR_DIR}/hooks/scripts/deploy_guard.py"'
+    context = f'"$(command -v python3 || command -v python)" "$CLAUDE_PROJECT_DIR/{VENDOR_DIR}/hooks/scripts/session_context.py"'
     wanted = {
         "PostToolUse": {"matcher": "Write|Edit|MultiEdit", "hooks": [{"type": "command", "command": lint}]},
         "PreToolUse": {"matcher": "Bash", "hooks": [{"type": "command", "command": guard}]},

@@ -68,6 +68,12 @@ Publisher ──► Async<X>OutboundService (Queueable) ──► <X>OutboundSer
 ```
 Testes: Repository e Trigger integrados; todo o resto mockado (herança ou Mocker), `IdGenerator`, `FixtureFactory` por objeto, nomes `given…When…Then…`.
 
+## Windows
+- **Node 22+** é obrigatório para o Salesforce CLI (ou use o instalador `.exe` do CLI, que já traz o próprio Node).
+- O Claude Code no Windows usa o **Git for Windows** (Git Bash) para rodar os hooks — instale-o.
+- Os hooks usam `python3` e, se ele não existir, `python`. Instale o Python 3 em python.org marcando **"Add python.exe to PATH"** e confira com `python --version` no Git Bash.
+- No PowerShell, rode os scripts com `python` no lugar de `python3` e use caminhos como `$HOME\kits\...`.
+
 ## Observações
 - O código Apex dos templates foi escrito para a API 62.0+ (usa `AccessLevel`, `Database.queryWithBinds`, `Assert`). Valide numa scratch org antes do primeiro uso no seu projeto.
 - O framework Mocker citado no livro é o [GS Apex Mocking Framework](https://github.com/gscloudsolutions/GS-Apex-Mocking-Framework) e não é distribuído aqui.

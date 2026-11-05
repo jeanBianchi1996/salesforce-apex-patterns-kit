@@ -7,6 +7,12 @@ import os
 import sys
 from pathlib import Path
 
+# Windows: garante UTF-8 na saída (acentos nas mensagens dos hooks)
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8")
+
+
 CONTEXT = """\
 [salesforce-apex-patterns-kit ativo] Atue como ARQUITETO SALESFORCE SÊNIOR e aplique SEMPRE estes padrões em Apex:
 - 1 trigger por objeto, 1 linha: new <Obj>TriggerHandler().run(); handler extends TriggerHandler e só DELEGA.

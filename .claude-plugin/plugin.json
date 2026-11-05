@@ -1,6 +1,6 @@
 {
   "name": "salesforce-apex-patterns-kit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Arquitetura Apex sênior: TriggerHandler, Repository, Filter, Validator, Enricher, Transformer, Inbound/Outbound Services, assíncrono e testes com Fixtures e Mocks. Skills, agentes, comandos e hooks que aplicam os padrões automaticamente.",
   "author": {
     "name": "Jean Bianchi"

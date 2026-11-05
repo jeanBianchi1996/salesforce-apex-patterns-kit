@@ -24,6 +24,12 @@ import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+# Windows: garante UTF-8 na saída (acentos nas mensagens dos hooks)
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8")
+
+
 ERROR, WARNING = "error", "warning"
 
 RULES = {

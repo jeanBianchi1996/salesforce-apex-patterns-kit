@@ -12,6 +12,12 @@ import os
 import re
 import sys
 
+# Windows: garante UTF-8 na saída (acentos nas mensagens dos hooks)
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8")
+
+
 DEPLOY = re.compile(r"\b(sf\s+project\s+deploy\s+(start|validate)|sfdx\s+force:(source|mdapi):deploy)\b")
 TARGET = re.compile(r"(?:--target-org|-o|--targetusername|-u)\s+([^\s]+)")
 PROD = re.compile(r"(prod|production|prd)", re.I)
