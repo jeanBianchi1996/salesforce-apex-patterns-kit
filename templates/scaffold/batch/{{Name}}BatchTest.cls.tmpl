@@ -1,0 +1,29 @@
+@IsTest
+private class {{Name}}BatchTest {
+
+    // Teste de ESTRUTURA, não de volume: poucos registros bastam.
+    @IsTest
+    static void givenRecordsWhenExecuteBatchThenCompleteWithoutErrors() {
+        {{SObjectName}}FixtureFactory.create({{SObjectName}}FixtureFactory.new{{Plural}}(5));
+
+        Test.startTest();
+        Id jobId = {{Name}}Batch.start();
+        Test.stopTest();
+
+        AsyncApexJob job = [SELECT Status, NumberOfErrors FROM AsyncApexJob WHERE Id = :jobId];
+        Assert.areEqual('Completed', job.Status);
+        Assert.areEqual(0, job.NumberOfErrors);
+    }
+
+    // execute mockado: Repository fake, sem DML.
+    @IsTest
+    static void givenChunkWhenExecuteThenSaveOnce() {
+        {{Name}}Batch batch = new {{Name}}Batch();
+        {{SObjectName}}RepositoryMock repositoryMock = new {{SObjectName}}RepositoryMock();
+        batch.repository = repositoryMock;
+
+        batch.execute(null, {{SObjectName}}FixtureFactory.new{{Plural}}WithFakeId(3));
+
+        Assert.areEqual(1, repositoryMock.saveCalls);
+    }
+}

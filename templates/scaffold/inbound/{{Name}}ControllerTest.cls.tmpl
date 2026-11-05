@@ -1,0 +1,54 @@
+/**
+ * Controller: mockado (service fake injetado no atributo static).
+ */
+@IsTest
+private class {{Name}}ControllerTest {
+
+    private class {{Name}}InboundServiceFailureMock extends {{Name}}InboundService {
+        override public {{Name}}InboundResponse save({{Name}}InboundRequest request) {
+            throw new IllegalArgumentException('Erro não esperado');
+        }
+    }
+
+    private static void setupRestContext() {
+        RestContext.request = new RestRequest();
+        RestContext.response = new RestResponse();
+    }
+
+    private static {{Name}}InboundRequest newRequest() {
+        {{Name}}InboundRequest request = new {{Name}}InboundRequest();
+        request.externalId = 'EXT-0001';
+        return request;
+    }
+
+    @IsTest
+    static void givenValidRequestWhenCreateThenReturn201WithId() {
+        setupRestContext();
+        {{Name}}InboundService service = new {{Name}}InboundService();
+        service.repository = new {{SObjectName}}RepositoryMock();
+        {{Name}}Controller.inboundService = service;
+
+        Test.startTest();
+        {{Name}}Controller.create(newRequest());
+        Test.stopTest();
+
+        Assert.areEqual(201, RestContext.response.statusCode);
+        {{Name}}InboundResponse response = {{Name}}InboundResponse.fromJson(RestContext.response.responseBody.toString());
+        Assert.isNotNull(response.id);
+        Assert.areEqual('EXT-0001', response.externalId);
+    }
+
+    @IsTest
+    static void givenUnexpectedErrorWhenCreateThenReturn400WithError() {
+        setupRestContext();
+        {{Name}}Controller.inboundService = new {{Name}}InboundServiceFailureMock();
+
+        Test.startTest();
+        {{Name}}Controller.create(newRequest());
+        Test.stopTest();
+
+        Assert.areEqual(400, RestContext.response.statusCode);
+        RestResponseError error = RestResponseError.fromJson(RestContext.response.responseBody.toString());
+        Assert.areEqual('Erro não esperado', error.error);
+    }
+}

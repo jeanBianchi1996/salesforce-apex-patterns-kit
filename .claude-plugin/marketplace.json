@@ -1,0 +1,13 @@
+{
+  "name": "jean-apex-kit",
+  "owner": {
+    "name": "Jean Bianchi"
+  },
+  "plugins": [
+    {
+      "name": "salesforce-apex-patterns-kit",
+      "source": "./",
+      "description": "Arquitetura Apex sênior baseada no livro Salesforce APEX (padrões e OO): skills, agentes, comandos, hooks e templates."
+    }
+  ]
+}

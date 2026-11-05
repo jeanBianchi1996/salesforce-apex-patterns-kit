@@ -1,0 +1,8 @@
+/**
+ * Contrato de entrada da API {{Name}}. Desacopla o cliente externo dos SObjects.
+ * global porque é parâmetro de método @RestResource.
+ */
+global inherited sharing class {{Name}}InboundRequest {
+    global String externalId;
+    // TODO: demais atributos; agrupe estruturas em inner classes (ex.: Address, Item)
+}

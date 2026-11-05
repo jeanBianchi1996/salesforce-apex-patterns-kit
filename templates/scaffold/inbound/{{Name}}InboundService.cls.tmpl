@@ -1,0 +1,24 @@
+/**
+ * Orquestra a API {{Name}}: transforma → persiste (upsert por chave externa) → responde.
+ * Savepoint manual: o Controller não propaga exceção, então o rollback é responsabilidade daqui.
+ * TODO: registre o log de integração (sucesso e falha) depois do rollback.
+ */
+public inherited sharing virtual class {{Name}}InboundService {
+
+    static final Schema.SObjectField EXTERNAL_ID_FIELD = Schema.{{SObject}}.{{ExternalIdField}};
+
+    @TestVisible {{SObjectName}}Repository repository = new {{SObjectName}}Repository();
+    @TestVisible {{Name}}InboundTransformer transformer = new {{Name}}InboundTransformer();
+
+    public virtual {{Name}}InboundResponse save({{Name}}InboundRequest request) {
+        Savepoint savepoint = Database.setSavepoint();
+        try {
+            {{SObject}} {{var}} = transformer.to{{SObjectName}}(request);
+            repository.save(new List<{{SObject}}>{ {{var}} }, EXTERNAL_ID_FIELD);
+            return transformer.toResponse({{var}});
+        } catch (Exception e) {
+            Database.rollback(savepoint);
+            throw e;
+        }
+    }
+}

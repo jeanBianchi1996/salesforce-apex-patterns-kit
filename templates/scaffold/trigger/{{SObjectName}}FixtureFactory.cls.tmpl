@@ -1,0 +1,47 @@
+/**
+ * Dados de teste de {{SObject}}.
+ *  new{{SObjectName}}()  → instância em memória (sem DML)
+ *  create(...)           → persiste
+ *  fromJson / fromJsonArray → para mocks (inclusive campos somente leitura)
+ */
+@IsTest
+public class {{SObjectName}}FixtureFactory {
+
+    public static {{SObject}} new{{SObjectName}}() {
+        return new {{SObject}}({{RequiredFields}});
+    }
+
+    public static List<{{SObject}}> new{{Plural}}(Integer quantity) {
+        List<{{SObject}}> {{plural}} = new List<{{SObject}}>();
+        for (Integer index = 0; index < quantity; index++) {
+            {{plural}}.add(new{{SObjectName}}());
+        }
+        return {{plural}};
+    }
+
+    public static List<{{SObject}}> new{{Plural}}WithFakeId(Integer quantity) {
+        return (List<{{SObject}}>) IdGenerator.generate(new{{Plural}}(quantity));
+    }
+
+    public static {{SObject}} create() {
+        return create(new{{SObjectName}}());
+    }
+
+    public static {{SObject}} create({{SObject}} {{var}}) {
+        insert {{var}};
+        return {{var}};
+    }
+
+    public static List<{{SObject}}> create(List<{{SObject}}> {{plural}}) {
+        insert {{plural}};
+        return {{plural}};
+    }
+
+    public static {{SObject}} fromJson(String payload) {
+        return ({{SObject}}) JSON.deserialize(payload, {{SObject}}.class);
+    }
+
+    public static List<{{SObject}}> fromJsonArray(String payload) {
+        return (List<{{SObject}}>) JSON.deserialize(payload, List<{{SObject}}>.class);
+    }
+}

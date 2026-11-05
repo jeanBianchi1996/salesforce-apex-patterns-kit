@@ -1,0 +1,29 @@
+/**
+ * Transformer: 100% mockado e com UMA asserção por linha de mapeamento.
+ */
+@IsTest
+private class {{Name}}OutboundTransformerTest {
+
+    @IsTest
+    static void given{{SObjectName}}WhenToOutboundRequestThenMapEveryField() {
+        {{SObject}} {{var}} = ({{SObject}}) IdGenerator.generate({{SObjectName}}FixtureFactory.new{{SObjectName}}());
+
+        {{Name}}OutboundRequest outboundRequest = new {{Name}}OutboundTransformer().toOutboundRequest({{var}});
+
+        Assert.areEqual({{var}}.Id, outboundRequest.externalId);
+        // TODO: um Assert por campo mapeado
+    }
+
+    @IsTest
+    static void givenResponseWhenTo{{SObjectName}}ThenMapEveryField() {
+        {{Name}}OutboundResponse response = {{Name}}OutboundFixtureFactory.fromJson(
+            {{Name}}OutboundFixtureFactory.defaultSuccessPayload()
+        );
+        {{SObject}} {{var}} = {{SObjectName}}FixtureFactory.new{{SObjectName}}();
+
+        {{SObject}} result = new {{Name}}OutboundTransformer().to{{SObjectName}}(response, {{var}});
+
+        Assert.areEqual({{var}}, result);
+        // TODO: um Assert por campo mapeado
+    }
+}

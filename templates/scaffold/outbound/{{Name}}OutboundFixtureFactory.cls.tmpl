@@ -1,0 +1,14 @@
+@IsTest
+public class {{Name}}OutboundFixtureFactory {
+
+    public static String defaultSuccessPayload() {
+        return JSON.serialize(new Map<String, Object>{
+            'id' => 'EXT-0001',
+            'status' => 'OK'
+        });
+    }
+
+    public static {{Name}}OutboundResponse fromJson(String payload) {
+        return ({{Name}}OutboundResponse) JSON.deserialize(payload, {{Name}}OutboundResponse.class);
+    }
+}

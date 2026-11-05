@@ -1,0 +1,17 @@
+/**
+ * Mapeia o contrato de entrada {{Name}} para {{SObject}}.
+ * Relacionamentos por chave externa: registro.Pai__r = new Pai__c(ExternalId__c = codigo);
+ */
+public inherited sharing virtual class {{Name}}InboundTransformer {
+
+    public virtual {{SObject}} to{{SObjectName}}({{Name}}InboundRequest request) {
+        {{SObject}} {{var}} = new {{SObject}}();
+        {{var}}.put('{{ExternalIdField}}', request.externalId);
+        // TODO: um campo por linha
+        return {{var}};
+    }
+
+    public virtual {{Name}}InboundResponse toResponse({{SObject}} {{var}}) {
+        return new {{Name}}InboundResponse({{var}}.Id, (String) {{var}}.get('{{ExternalIdField}}'));
+    }
+}

@@ -1,0 +1,23 @@
+name: Apex architecture lint
+
+on:
+  pull_request:
+    paths:
+      - "force-app/**/*.cls"
+      - "force-app/**/*.trigger"
+  push:
+    branches: [main]
+    paths:
+      - "force-app/**/*.cls"
+      - "force-app/**/*.trigger"
+
+jobs:
+  apex-architecture-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Regras de arquitetura (salesforce-apex-patterns-kit)
+        run: python3 .apex-kit/hooks/scripts/apex_lint.py force-app --format github

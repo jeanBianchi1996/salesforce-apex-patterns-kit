@@ -1,0 +1,23 @@
+/**
+ * API exposta: /services/apexrest/api/v1/{{route}}
+ * Controller fino: delega ao InboundService e NUNCA propaga exceção (exceção propagada
+ * = rollback de tudo, inclusive do log). Dependência static + @TestVisible para mocks.
+ */
+@RestResource(urlMapping='/api/v1/{{route}}/*')
+global with sharing class {{Name}}Controller {
+
+    @TestVisible
+    static {{Name}}InboundService inboundService = new {{Name}}InboundService();
+
+    @HttpPost
+    global static void create({{Name}}InboundRequest request) {
+        RestResponseBuilder response = new RestResponseBuilder(RestContext.response);
+        try {
+            response.withStatus(201).withBody(inboundService.save(request));
+        } catch (DmlException e) {
+            response.withError(e);
+        } catch (Exception e) {
+            response.withError(e);
+        }
+    }
+}

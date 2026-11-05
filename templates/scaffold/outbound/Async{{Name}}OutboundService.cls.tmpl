@@ -1,0 +1,62 @@
+/**
+ * Disparo assíncrono da integração {{Name}} (callout não pode ocorrer com DML pendente).
+ * Chamado pelo Publisher do TriggerHandler apenas com registros já filtrados.
+ *
+ *   System.enqueueJob(new Async{{Name}}OutboundService(recordIds));
+ *
+ * Processa em lotes de CALLOUTS_PER_JOB (limite de 100 callouts por transação) e
+ * encadeia o restante. Em testes, sobrescreva enqueueNextJob num Mock
+ * (nunca use Test.isRunningTest() no código de produção).
+ */
+public inherited sharing virtual class Async{{Name}}OutboundService implements Queueable, Database.AllowsCallouts {
+
+    @TestVisible static final Integer CALLOUTS_PER_JOB = 50;
+
+    @TestVisible List<Id> pendingIds;
+    @TestVisible {{Name}}OutboundService outboundService = new {{Name}}OutboundService();
+    @TestVisible {{Name}}OutboundTransformer transformer = new {{Name}}OutboundTransformer();
+    @TestVisible {{SObjectName}}Repository repository = new {{SObjectName}}Repository();
+
+    public Async{{Name}}OutboundService(Set<Id> recordIds) {
+        this.pendingIds = new List<Id>(recordIds);
+    }
+
+    public void execute(QueueableContext context) {
+        Set<Id> currentIds = takeNextChunk();
+        List<{{SObject}}> {{plural}} = repository.findByIds(currentIds);
+        sendAll({{plural}});
+        repository.save({{plural}});
+        enqueueRemaining();
+    }
+
+    private Set<Id> takeNextChunk() {
+        Set<Id> chunk = new Set<Id>();
+        while (!pendingIds.isEmpty() && chunk.size() < CALLOUTS_PER_JOB) {
+            chunk.add(pendingIds.remove(0));
+        }
+        return chunk;
+    }
+
+    private void sendAll(List<{{SObject}}> {{plural}}) {
+        for ({{SObject}} {{var}} : {{plural}}) {
+            send({{var}});
+        }
+    }
+
+    private void send({{SObject}} {{var}}) {
+        {{Name}}OutboundResponse response = outboundService.send(transformer.toOutboundRequest({{var}}));
+        transformer.to{{SObjectName}}(response, {{var}});
+    }
+
+    private void enqueueRemaining() {
+        if (pendingIds.isEmpty()) {
+            return;
+        }
+        enqueueNextJob(new Set<Id>(pendingIds));
+    }
+
+    @TestVisible
+    protected virtual void enqueueNextJob(Set<Id> remainingIds) {
+        System.enqueueJob(new Async{{Name}}OutboundService(remainingIds));
+    }
+}

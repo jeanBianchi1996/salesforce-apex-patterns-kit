@@ -1,0 +1,24 @@
+/**
+ * Validações de {{SObject}}. Um único método público; cada regra em um método privado.
+ * Nunca atribui valores (isso é papel do Enricher).
+ */
+public inherited sharing class {{SObjectName}}Validator {
+
+    public void validate(List<{{SObject}}> {{plural}}) {
+        for ({{SObject}} {{var}} : {{plural}}) {
+            validateBusinessRule({{var}});
+        }
+    }
+
+    // TODO: renomeie para a regra real (ex.: validateDocumentNumber). Mensagem em Custom Label.
+    private void validateBusinessRule({{SObject}} {{var}}) {
+        if (isValid({{var}})) {
+            return;
+        }
+        {{var}}.addError('Registro inválido.');
+    }
+
+    private Boolean isValid({{SObject}} {{var}}) {
+        return true; // TODO: implemente a regra
+    }
+}

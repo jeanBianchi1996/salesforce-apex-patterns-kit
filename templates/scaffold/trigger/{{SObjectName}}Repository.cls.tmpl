@@ -1,0 +1,23 @@
+/**
+ * Único ponto de SOQL/DML de {{SObject}}. Métodos findByXxx retornam sempre lista (nunca null).
+ * Virtual para permitir Mocks por herança e pelo framework Mocker.
+ */
+public inherited sharing virtual class {{SObjectName}}Repository extends AbstractRepository {
+
+    public virtual List<{{SObject}}> findByIds(Set<Id> ids) {
+        return [
+            SELECT Id
+            FROM {{SObject}}
+            WHERE Id IN :ids
+        ];
+    }
+
+    public virtual Database.QueryLocator findLocatorByCreatedInLastDays(Integer days) {
+        Datetime since = Datetime.now().addDays(-days);
+        return Database.getQueryLocator([
+            SELECT Id
+            FROM {{SObject}}
+            WHERE CreatedDate >= :since
+        ]);
+    }
+}

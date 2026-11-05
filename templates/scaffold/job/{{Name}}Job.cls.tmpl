@@ -1,0 +1,22 @@
+/**
+ * Agendamento fino: só dispara o Batch/Service. Nenhuma regra aqui.
+ *
+ *   {{Name}}Job.schedule(); // todo dia às 03:00
+ */
+public with sharing class {{Name}}Job implements Schedulable {
+
+    public static final String JOB_NAME = '{{Name}}Job';
+    public static final String DAILY_AT_3_AM = '0 0 3 * * ?';
+
+    public void execute(SchedulableContext context) {
+        Database.executeBatch(new {{Name}}Batch());
+    }
+
+    public static Id schedule() {
+        return schedule(JOB_NAME, DAILY_AT_3_AM);
+    }
+
+    public static Id schedule(String jobName, String cronExpression) {
+        return System.schedule(jobName, cronExpression, new {{Name}}Job());
+    }
+}

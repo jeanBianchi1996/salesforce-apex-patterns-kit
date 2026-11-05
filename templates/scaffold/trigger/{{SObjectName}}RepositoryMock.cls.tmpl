@@ -1,0 +1,36 @@
+/**
+ * Fake/Stub padrão de {{SObjectName}}Repository: nenhum DML real.
+ * Reutilize em todos os testes mockados que dependem deste Repository.
+ */
+@IsTest
+public class {{SObjectName}}RepositoryMock extends {{SObjectName}}Repository {
+
+    List<{{SObject}}> stored{{Plural}} = new List<{{SObject}}>();
+    public Integer saveCalls = 0;
+
+    public {{SObjectName}}RepositoryMock() {}
+
+    public {{SObjectName}}RepositoryMock(List<{{SObject}}> stored{{Plural}}) {
+        this.stored{{Plural}} = stored{{Plural}};
+    }
+
+    override public List<{{SObject}}> findByIds(Set<Id> ids) {
+        List<{{SObject}}> found{{Plural}} = new List<{{SObject}}>();
+        for ({{SObject}} {{var}} : stored{{Plural}}) {
+            if (ids.contains({{var}}.Id)) {
+                found{{Plural}}.add({{var}});
+            }
+        }
+        return found{{Plural}};
+    }
+
+    override public List<SObject> save(List<SObject> records) {
+        saveCalls++;
+        return IdGenerator.generate(records);
+    }
+
+    override public List<SObject> save(List<SObject> records, Schema.SObjectField externalIdField) {
+        saveCalls++;
+        return IdGenerator.generate(records);
+    }
+}

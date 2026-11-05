@@ -1,0 +1,19 @@
+name: Kit self-test
+
+on: [push, pull_request]
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Valida JSONs do plugin e hooks
+        run: |
+          python3 -m json.tool .claude-plugin/plugin.json > /dev/null
+          python3 -m json.tool .claude-plugin/marketplace.json > /dev/null
+          python3 -m json.tool hooks/hooks.json > /dev/null
+      - name: Scaffold de todos os tipos + lint deve passar limpo
+        run: bash scripts/selftest.sh

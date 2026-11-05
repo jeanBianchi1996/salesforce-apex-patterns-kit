@@ -1,0 +1,33 @@
+@IsTest
+private class {{Name}}OutboundServiceTest {
+
+    @IsTest
+    static void givenSuccessResponseWhenSendThenReturnParsedResponse() {
+        String payload = {{Name}}OutboundFixtureFactory.defaultSuccessPayload();
+        {{Name}}CalloutMock calloutMock = new {{Name}}CalloutMock(payload);
+        Test.setMock(HttpCalloutMock.class, calloutMock);
+
+        Test.startTest();
+        {{Name}}OutboundResponse response = new {{Name}}OutboundService().send(new {{Name}}OutboundRequest());
+        Test.stopTest();
+
+        Assert.areEqual('EXT-0001', response.id);
+        Assert.areEqual('OK', response.status);
+        Assert.areEqual('POST', calloutMock.lastRequest.getMethod());
+        Assert.isTrue(calloutMock.lastRequest.getEndpoint().startsWith({{Name}}OutboundService.ENDPOINT));
+    }
+
+    @IsTest
+    static void givenErrorResponseWhenSendThenThrowOutboundException() {
+        Test.setMock(HttpCalloutMock.class, new {{Name}}CalloutMock('{"error":"invalid"}', 400));
+
+        Test.startTest();
+        try {
+            new {{Name}}OutboundService().send(new {{Name}}OutboundRequest());
+            Assert.fail('Deveria lançar {{Name}}OutboundException');
+        } catch ({{Name}}OutboundService.{{Name}}OutboundException e) {
+            Assert.isTrue(e.getMessage().contains('400'));
+        }
+        Test.stopTest();
+    }
+}

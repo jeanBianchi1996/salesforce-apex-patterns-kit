@@ -1,0 +1,36 @@
+/**
+ * Callout para {{Name}}. Responsabilidade única: montar a request, enviar e devolver o DTO.
+ * Mapeamento para SObject é papel do Transformer. Endpoint SEMPRE via Named Credential.
+ */
+public inherited sharing virtual class {{Name}}OutboundService {
+
+    @TestVisible
+    static final String ENDPOINT = 'callout:{{NamedCredential}}';
+    static final Integer TIMEOUT_IN_MILLISECONDS = 20000;
+
+    public virtual {{Name}}OutboundResponse send({{Name}}OutboundRequest outboundRequest) {
+        HttpResponse response = new Http().send(buildRequest(outboundRequest));
+        return buildResponse(response);
+    }
+
+    private HttpRequest buildRequest({{Name}}OutboundRequest outboundRequest) {
+        HttpRequest request = new HttpRequest();
+        request.setEndpoint(ENDPOINT + '/TODO-path');
+        request.setMethod('POST');
+        request.setHeader('Content-Type', 'application/json; charset=utf-8');
+        request.setTimeout(TIMEOUT_IN_MILLISECONDS);
+        request.setBody(JSON.serialize(outboundRequest, true));
+        return request;
+    }
+
+    private {{Name}}OutboundResponse buildResponse(HttpResponse response) {
+        if (response.getStatusCode() >= 300) {
+            throw new {{Name}}OutboundException(
+                'Falha na integração {{Name}}: HTTP ' + response.getStatusCode() + ' - ' + response.getBody()
+            );
+        }
+        return ({{Name}}OutboundResponse) JSON.deserialize(response.getBody(), {{Name}}OutboundResponse.class);
+    }
+
+    public class {{Name}}OutboundException extends Exception {}
+}

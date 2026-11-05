@@ -1,0 +1,34 @@
+/**
+ * Processamento em lote de {{SObject}}. start → execute (lotes) → finish (encadeie o próximo Batch aqui).
+ * Acesso a dados via Repository; algoritmo complexo vai para Enricher/Service próprio.
+ * Sharing explícito (classe de entrada). Justifique se usar without sharing.
+ *
+ *   Database.executeBatch(new {{Name}}Batch(), 200);
+ */
+public with sharing class {{Name}}Batch implements Database.Batchable<SObject> {
+
+    @TestVisible {{SObjectName}}Repository repository = new {{SObjectName}}Repository();
+
+    public Database.QueryLocator start(Database.BatchableContext context) {
+        return repository.findLocatorByCreatedInLastDays(1); // TODO: critério real no Repository
+    }
+
+    public void execute(Database.BatchableContext context, List<{{SObject}}> {{plural}}) {
+        List<{{SObject}}> changed{{Plural}} = process({{plural}});
+        repository.save(changed{{Plural}});
+    }
+
+    public void finish(Database.BatchableContext context) {
+        // TODO: encadear próximo Batch, se houver: Database.executeBatch(new ProximoBatch());
+    }
+
+    @TestVisible
+    private List<{{SObject}}> process(List<{{SObject}}> {{plural}}) {
+        // TODO: regra do lote (sem SOQL/DML aqui dentro)
+        return {{plural}};
+    }
+
+    public static Id start() {
+        return Database.executeBatch(new {{Name}}Batch());
+    }
+}

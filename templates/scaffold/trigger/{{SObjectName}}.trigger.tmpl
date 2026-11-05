@@ -1,0 +1,3 @@
+trigger {{SObjectName}} on {{SObject}} (before insert, before update, after insert, after update) {
+    new {{SObjectName}}TriggerHandler().run();
+}

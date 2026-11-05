@@ -1,0 +1,42 @@
+/**
+ * Trigger + TriggerHandler: testes INTEGRADOS (o propósito é reagir a eventos do banco).
+ * Inclui o cenário em massa (200 registros) para provar a bulkificação.
+ */
+@IsTest
+private class {{SObjectName}}TriggerHandlerTest {
+
+    @IsTest
+    static void givenValid{{SObjectName}}WhenInsertThenPersist() {
+        {{SObject}} {{var}} = {{SObjectName}}FixtureFactory.new{{SObjectName}}();
+
+        Test.startTest();
+        Database.SaveResult result = Database.insert({{var}}, false);
+        Test.stopTest();
+
+        Assert.isTrue(result.isSuccess(), String.valueOf(result.getErrors()));
+    }
+
+    @IsTest
+    static void givenBulkOf200WhenInsertThenRespectGovernorLimits() {
+        List<{{SObject}}> {{plural}} = {{SObjectName}}FixtureFactory.new{{Plural}}(200);
+
+        Test.startTest();
+        insert {{plural}};
+        Integer queries = Limits.getQueries();
+        Test.stopTest();
+
+        Assert.isTrue(queries < 20, 'Possível SOQL em loop: ' + queries + ' queries para 200 registros');
+    }
+
+    @IsTest
+    static void givenBypassedHandlerWhenInsertThenSkipHandler() {
+        TriggerHandler.bypass('{{SObjectName}}TriggerHandler');
+
+        Test.startTest();
+        {{SObject}} {{var}} = {{SObjectName}}FixtureFactory.create();
+        Test.stopTest();
+
+        Assert.isNotNull({{var}}.Id);
+        TriggerHandler.clearAllBypasses();
+    }
+}

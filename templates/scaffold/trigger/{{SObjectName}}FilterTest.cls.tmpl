@@ -1,0 +1,47 @@
+/**
+ * Filter: teste 100% mockado (listas em memória, Ids falsos, sem DML).
+ */
+@IsTest
+private class {{SObjectName}}FilterTest {
+
+    @IsTest
+    static void givenUnchangedAndChangedRecordsWhenFilterByFieldThenReturnOnlyChanged() {
+        List<{{SObject}}> new{{Plural}} = {{SObjectName}}FixtureFactory.new{{Plural}}WithFakeId(2);
+        {{SObject}} unchanged = new{{Plural}}.get(0);
+        {{SObject}} changed = new{{Plural}}.get(1);
+        {{SObject}} oldChanged = changed.clone(true, true, false, false);
+        oldChanged.put('OwnerId', IdGenerator.generate(User.SObjectType));
+        Map<Id, {{SObject}}> old{{Plural}} = new Map<Id, {{SObject}}>{
+            unchanged.Id => unchanged.clone(true, true, false, false),
+            changed.Id => oldChanged
+        };
+
+        Test.startTest();
+        List<{{SObject}}> result = new {{SObjectName}}Filter()
+            .byChangedField(new{{Plural}}, old{{Plural}}, Schema.{{SObject}}.OwnerId);
+        Test.stopTest();
+
+        Assert.areEqual(1, result.size());
+        Assert.areEqual(changed.Id, result.get(0).Id);
+    }
+
+    @IsTest
+    static void givenInsertContextWithoutOldMapWhenFilterThenReturnAll() {
+        List<{{SObject}}> new{{Plural}} = {{SObjectName}}FixtureFactory.new{{Plural}}WithFakeId(3);
+
+        List<{{SObject}}> result = new {{SObjectName}}Filter()
+            .byChangedField(new{{Plural}}, null, Schema.{{SObject}}.OwnerId);
+
+        Assert.areEqual(3, result.size());
+    }
+
+    @IsTest
+    static void givenRecordsWhenIndexByIdThenMapEveryRecord() {
+        List<{{SObject}}> {{plural}} = {{SObjectName}}FixtureFactory.new{{Plural}}WithFakeId(2);
+
+        Map<Id, {{SObject}}> indexed = new {{SObjectName}}Filter().indexById({{plural}});
+
+        Assert.areEqual(2, indexed.size());
+        Assert.isTrue(indexed.containsKey({{plural}}.get(0).Id));
+    }
+}

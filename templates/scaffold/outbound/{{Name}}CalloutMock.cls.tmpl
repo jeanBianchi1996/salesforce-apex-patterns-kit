@@ -1,0 +1,28 @@
+/**
+ * Stub HTTP de {{Name}}. Construtor (payload) → 200; (payload, statusCode) → status definido.
+ */
+@IsTest
+public class {{Name}}CalloutMock implements HttpCalloutMock {
+
+    final String payload;
+    final Integer statusCode;
+    public HttpRequest lastRequest;
+
+    public {{Name}}CalloutMock(String payload) {
+        this(payload, 200);
+    }
+
+    public {{Name}}CalloutMock(String payload, Integer statusCode) {
+        this.payload = payload;
+        this.statusCode = statusCode;
+    }
+
+    public HttpResponse respond(HttpRequest request) {
+        this.lastRequest = request;
+        HttpResponse response = new HttpResponse();
+        response.setStatusCode(statusCode);
+        response.setHeader('Content-Type', 'application/json');
+        response.setBody(payload);
+        return response;
+    }
+}

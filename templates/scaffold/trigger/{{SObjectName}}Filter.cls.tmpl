@@ -1,0 +1,31 @@
+/**
+ * Filtra, extrai, indexa e agrupa {{SObject}} em memória. Sem SOQL, sem DML, sem alterar campos.
+ */
+public inherited sharing class {{SObjectName}}Filter {
+
+    public List<{{SObject}}> byChangedField(
+        List<{{SObject}}> new{{Plural}},
+        Map<Id, {{SObject}}> old{{Plural}},
+        Schema.SObjectField field
+    ) {
+        List<{{SObject}}> changed{{Plural}} = new List<{{SObject}}>();
+        for ({{SObject}} {{var}} : new{{Plural}}) {
+            if (hasChanged({{var}}, old{{Plural}}?.get({{var}}.Id), field)) {
+                changed{{Plural}}.add({{var}});
+            }
+        }
+        return changed{{Plural}};
+    }
+
+    public Set<Id> extractIds(List<{{SObject}}> {{plural}}) {
+        return indexById({{plural}}).keySet();
+    }
+
+    public Map<Id, {{SObject}}> indexById(List<{{SObject}}> {{plural}}) {
+        return new Map<Id, {{SObject}}>({{plural}});
+    }
+
+    private Boolean hasChanged({{SObject}} {{var}}, {{SObject}} old{{SObjectName}}, Schema.SObjectField field) {
+        return old{{SObjectName}} == null || {{var}}.get(field) != old{{SObjectName}}.get(field);
+    }
+}

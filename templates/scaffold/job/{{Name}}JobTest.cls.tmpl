@@ -1,0 +1,17 @@
+@IsTest
+private class {{Name}}JobTest {
+
+    @IsTest
+    static void givenCronExpressionWhenScheduleThenRegisterCronTrigger() {
+        // Nome único: CronTrigger mantém nomes já existentes na org.
+        String jobName = {{Name}}Job.JOB_NAME + ' Test ' + Datetime.now().getTime();
+
+        Test.startTest();
+        Id cronId = {{Name}}Job.schedule(jobName, {{Name}}Job.DAILY_AT_3_AM);
+        Test.stopTest();
+
+        CronTrigger cron = [SELECT CronExpression, CronJobDetail.Name FROM CronTrigger WHERE Id = :cronId];
+        Assert.areEqual({{Name}}Job.DAILY_AT_3_AM, cron.CronExpression);
+        Assert.areEqual(jobName, cron.CronJobDetail.Name);
+    }
+}

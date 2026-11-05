@@ -1,0 +1,13 @@
+global inherited sharing class {{Name}}InboundResponse {
+    global String id;
+    global String externalId;
+
+    public {{Name}}InboundResponse(String id, String externalId) {
+        this.id = id;
+        this.externalId = externalId;
+    }
+
+    public static {{Name}}InboundResponse fromJson(String payload) {
+        return ({{Name}}InboundResponse) JSON.deserialize(payload, {{Name}}InboundResponse.class);
+    }
+}

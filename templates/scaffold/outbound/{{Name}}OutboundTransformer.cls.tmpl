@@ -1,0 +1,18 @@
+/**
+ * Mapeia {{SObject}} ⇄ DTOs da integração {{Name}} (variação do Adapter, escopo de integração).
+ * Sem dependências de Repository/Service: recebe um dado, devolve outro.
+ */
+public inherited sharing virtual class {{Name}}OutboundTransformer {
+
+    public virtual {{Name}}OutboundRequest toOutboundRequest({{SObject}} {{var}}) {
+        {{Name}}OutboundRequest outboundRequest = new {{Name}}OutboundRequest();
+        outboundRequest.externalId = {{var}}.Id;
+        // TODO: mapear um campo por linha
+        return outboundRequest;
+    }
+
+    public virtual {{SObject}} to{{SObjectName}}({{Name}}OutboundResponse response, {{SObject}} {{var}}) {
+        // TODO: mapear um campo por linha, ex.: {{var}}.ExternalId__c = response.id;
+        return {{var}};
+    }
+}

@@ -1,0 +1,39 @@
+/**
+ * Queueable mockado: Repository fake (sem DML), callout via HttpCalloutMock,
+ * encadeamento interceptado por sobrescrita (sem Test.isRunningTest()).
+ */
+@IsTest
+private class Async{{Name}}OutboundServiceTest {
+
+    private class Async{{Name}}OutboundServiceMock extends Async{{Name}}OutboundService {
+        Set<Id> enqueuedIds;
+
+        Async{{Name}}OutboundServiceMock(Set<Id> recordIds) {
+            super(recordIds);
+        }
+
+        override protected void enqueueNextJob(Set<Id> remainingIds) {
+            this.enqueuedIds = remainingIds;
+        }
+    }
+
+    @IsTest
+    static void givenMoreRecordsThanChunkWhenExecuteThenSendChunkAndEnqueueRest() {
+        Integer total = Async{{Name}}OutboundService.CALLOUTS_PER_JOB + 1;
+        List<{{SObject}}> {{plural}} = {{SObjectName}}FixtureFactory.new{{Plural}}WithFakeId(total);
+        {{SObjectName}}RepositoryMock repositoryMock = new {{SObjectName}}RepositoryMock({{plural}});
+        Test.setMock(HttpCalloutMock.class, new {{Name}}CalloutMock({{Name}}OutboundFixtureFactory.defaultSuccessPayload()));
+
+        Async{{Name}}OutboundServiceMock job = new Async{{Name}}OutboundServiceMock(
+            new Map<Id, {{SObject}}>({{plural}}).keySet()
+        );
+        job.repository = repositoryMock;
+
+        Test.startTest();
+        job.execute(null);
+        Test.stopTest();
+
+        Assert.areEqual(1, repositoryMock.saveCalls, 'Deve salvar uma única vez por lote');
+        Assert.areEqual(1, job.enqueuedIds.size(), 'Deve encadear o restante');
+    }
+}

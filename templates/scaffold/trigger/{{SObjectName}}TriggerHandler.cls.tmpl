@@ -1,0 +1,43 @@
+/**
+ * Único TriggerHandler de {{SObject}}. Delega: Filter → Validator / Enricher / Publisher.
+ * Métodos de evento só chamam métodos privados (um nível de abstração).
+ */
+public with sharing class {{SObjectName}}TriggerHandler extends TriggerHandler {
+
+    List<{{SObject}}> new{{Plural}};
+    Map<Id, {{SObject}}> old{{Plural}};
+
+    @TestVisible {{SObjectName}}Filter filter;
+    @TestVisible {{SObjectName}}Validator validator;
+
+    public {{SObjectName}}TriggerHandler() {
+        this((List<{{SObject}}>) Trigger.new, (Map<Id, {{SObject}}>) Trigger.oldMap);
+    }
+
+    public {{SObjectName}}TriggerHandler(List<{{SObject}}> new{{Plural}}, Map<Id, {{SObject}}> old{{Plural}}) {
+        this.new{{Plural}} = new{{Plural}};
+        this.old{{Plural}} = old{{Plural}};
+        this.filter = new {{SObjectName}}Filter();
+        this.validator = new {{SObjectName}}Validator();
+    }
+
+    override protected void beforeInsert() {
+        validate();
+    }
+
+    override protected void beforeUpdate() {
+        validate();
+    }
+
+    override protected void afterInsert() {
+        // TODO: ex.: enrichRelatedRecords();
+    }
+
+    override protected void afterUpdate() {
+        // TODO: ex.: publishChangedRecords();
+    }
+
+    private void validate() {
+        validator.validate(new{{Plural}});
+    }
+}
