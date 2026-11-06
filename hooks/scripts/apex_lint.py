@@ -10,7 +10,8 @@ No modo hook:
   - erro  → mensagem no stderr + exit 2 (o Claude recebe o feedback e corrige);
   - aviso → JSON com additionalContext no stdout + exit 0.
   Variáveis: APEX_KIT_STRICT=1 (avisos viram erros), APEX_KIT_DISABLE=1 (desliga),
-             APEX_KIT_MODE=warn (nada bloqueia; erros e avisos voltam como contexto — ideal para código legado).
+             APEX_KIT_MODE=warn (nada bloqueia; erros e avisos voltam como contexto — ideal para código legado),
+             APEX_KIT_IGNORE=APX005,APX018 (desliga regras que conflitam com as convenções do projeto).
 
 Supressão (use com justificativa):
   // apex-kit:ignore APX002            → na própria linha ou na linha anterior
@@ -148,7 +149,7 @@ class FileLinter:
         self.is_test = bool(re.search(r"@\s*isTest\b", self.code, re.I))
         match = CLASS_DECL.search(self.code)
         self.class_name = match.group(3) if match else path.stem
-        self.file_ignores = set()
+        self.file_ignores = {r.strip() for r in os.environ.get("APEX_KIT_IGNORE", "").split(",") if r.strip()}
         for found in IGNORE_FILE.findall(source):
             self.file_ignores.update(rule.strip() for rule in found.split(","))
 

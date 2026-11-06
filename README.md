@@ -62,8 +62,9 @@ Variáveis dos hooks: `APEX_KIT_STRICT=1` (avisos bloqueiam), `APEX_KIT_MODE=war
 
 Para usar o modo aviso só num repositório, sem commitar nada, crie `.claude/settings.local.json` nele:
 ```json
-{ "env": { "APEX_KIT_MODE": "warn" } }
+{ "env": { "APEX_KIT_MODE": "warn", "APEX_KIT_IGNORE": "APX005,APX016,APX018" } }
 ```
+`APEX_KIT_IGNORE` desliga regras que conflitam com as convenções do repositório (ex.: notação húngara obrigatória).
 
 ## Os padrões em uma tela
 ```
