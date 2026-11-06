@@ -58,7 +58,12 @@ python3 hooks/scripts/apex_lint.py force-app --strict        # avisos também re
 ```
 Regras `APX001`–`APX019`: trigger com lógica, SOQL/DML fora de Repository, SOQL/DML em loop, notação húngara, `Test.isRunningTest()`, `SeeAllData`, teste sem assert, Id/endpoint fixos, sharing ausente ou sem justificativa, indentação > 3, `@future`, `SECURITY_ENFORCED`, SOQL concatenado, nome de teste fora do BDD, callout em loop. Supressão justificada: `// apex-kit:ignore APX002`. Complementa (não substitui) o PMD / Salesforce Code Analyzer.
 
-Variáveis dos hooks: `APEX_KIT_STRICT=1` (avisos bloqueiam), `APEX_KIT_DISABLE=1` (desliga).
+Variáveis dos hooks: `APEX_KIT_STRICT=1` (avisos bloqueiam), `APEX_KIT_MODE=warn` (nada bloqueia — recomendado em repositórios legados), `APEX_KIT_DISABLE=1` (desliga).
+
+Para usar o modo aviso só num repositório, sem commitar nada, crie `.claude/settings.local.json` nele:
+```json
+{ "env": { "APEX_KIT_MODE": "warn" } }
+```
 
 ## Os padrões em uma tela
 ```

@@ -9,7 +9,8 @@ Modos:
 No modo hook:
   - erro  → mensagem no stderr + exit 2 (o Claude recebe o feedback e corrige);
   - aviso → JSON com additionalContext no stdout + exit 0.
-  Variáveis: APEX_KIT_STRICT=1 (avisos viram erros), APEX_KIT_DISABLE=1 (desliga).
+  Variáveis: APEX_KIT_STRICT=1 (avisos viram erros), APEX_KIT_DISABLE=1 (desliga),
+             APEX_KIT_MODE=warn (nada bloqueia; erros e avisos voltam como contexto — ideal para código legado).
 
 Supressão (use com justificativa):
   // apex-kit:ignore APX002            → na própria linha ou na linha anterior
@@ -358,8 +359,11 @@ def run_hook() -> int:
         return 0
     findings = lint_file(Path(file_path))
     strict = os.environ.get("APEX_KIT_STRICT") == "1"
+    warn_only = os.environ.get("APEX_KIT_MODE", "").lower() == "warn"
     errors = [f for f in findings if f.severity == ERROR or strict]
     warnings = [f for f in findings if f not in errors]
+    if errors and warn_only:
+        warnings, errors = errors + warnings, []
     if errors:
         print(
             "salesforce-apex-patterns-kit: o arquivo viola regras de arquitetura. Corrija antes de seguir:\n"
@@ -373,7 +377,11 @@ def run_hook() -> int:
         print(json.dumps({
             "hookSpecificOutput": {
                 "hookEventName": "PostToolUse",
-                "additionalContext": "Avisos de arquitetura Apex (avalie e corrija se fizer sentido):\n" + format_text(warnings),
+                "additionalContext": (
+                    "Achados de arquitetura Apex (modo aviso). Corrija o que você introduziu nesta edição; "
+                    "não refatore código legado não relacionado sem o usuário pedir:\n" if warn_only else
+                    "Avisos de arquitetura Apex (avalie e corrija se fizer sentido):\n"
+                ) + format_text(warnings),
             }
         }))
     return 0
